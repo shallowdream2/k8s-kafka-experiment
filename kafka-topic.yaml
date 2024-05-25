@@ -1,0 +1,12 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-kafka-topics
+spec:
+  template:
+    spec:
+      containers:
+      - name: kafka-topic-creator
+        image: wurstmeister/kafka:latest
+        command: ["sh", "-c", "kafka-topics.sh --create --topic test-topic --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1 && kafka-topics.sh --create --topic test-topic-2 --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1"]
+      restartPolicy: OnFailure
