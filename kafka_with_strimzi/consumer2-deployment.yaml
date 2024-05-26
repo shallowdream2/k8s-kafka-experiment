@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer2
+  labels:
+    app: consumer2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumer2
+  template:
+    metadata:
+      labels:
+        app: consumer2
+    spec:
+      nodeSelector:
+        kafka-consumer2: "true"
+      containers:
+      - name: consumer2
+        image: shallowdream2/mykafka:latest
+        command: ["python", "consumer2.py"]
+        env:
+        - name: KAFKA_BROKER
+          value: my-kafka-cluster-kafka-bootstrap:9092
+        - name: TOPIC_NAME
+          value: test-topic-2
+

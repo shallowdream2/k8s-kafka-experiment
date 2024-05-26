@@ -1,0 +1,70 @@
+apiVersion: kafka.strimzi.io/v1beta1
+kind: Kafka
+metadata:
+  name: my-kafka-cluster
+spec:
+  kafka:
+    version: 2.5.0
+    replicas: 3
+    listeners:
+      plain:
+        name: plain
+        port: 9092
+        type: internal
+        tls: false
+    storage:
+      type: jbod
+      volumes:
+      - id: 0
+        type: persistent-claim
+        size: 10Gi
+        deleteClaim: false 
+    tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+      kafka-broker: "true"
+  zookeeper:
+    replicas: 3
+    tolerations:
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
+    storage:
+      type: persistent-claim
+      size: 10Gi
+      deleteClaim: false
+      storageClassName: local-storage
+      volumeClaimTemplates:
+      - metadata:
+          name: data-my-kafka-cluster-zookeeper-0
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+
+      - metadata:
+          name: data-my-kafka-cluster-zookeeper-1
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+
+      - metadata:
+          name: data-my-kafka-cluster-zookeeper-2
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper
+  labels:
+    app: zookeeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+      nodeSelector:
+        kafka-broker: "true"
+      containers:
+      - name: zookeeper
+        image: wurstmeister/zookeeper:latest
+        ports:
+        - containerPort: 2181
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  labels:
+    app: zookeeper
+spec:
+  ports:
+  - port: 2181
+    protocol: TCP
+  selector:
+    app: zookeeper
+  type: ClusterIP
+
